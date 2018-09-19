@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# java
+export JDK_DIR=$(/usr/libexec/java_home)
+export JAVA_HOME=$JDK_DIR
+
 function _add_to_path() {
     export PATH="$PATH:$1"
 }
@@ -10,6 +14,13 @@ function _prepend_to_path() {
 
 # my custom scripts
 _add_to_path ~/.bin
+
+# stack
+_add_to_path ~/.local/bin
+
+# spark
+export SPARK_HOME=/usr/local/lib/spark-2.1.1-bin-hadoop2.7
+_add_to_path $SPARK_HOME/bin
 
 export EDITOR=vim
 

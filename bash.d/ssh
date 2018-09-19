@@ -24,6 +24,9 @@ function start_ssh_agent() {
     eval "$(ssh-agent -s)"
     local SSH_KEYS=(
         id_rsa
+        leapyear-ci.pem
+        leapyear-dev.pem
+        squid_key.pem
     )
     (cd ~/.ssh && ssh-add "${SSH_KEYS[@]}")
 }

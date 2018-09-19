@@ -12,8 +12,10 @@ function title() {
 function update_title() {
     local title=$CUSTOM_TITLE
     if [[ -z $title ]]; then
-        if is_repo; then
-            title="$(get_repo):$(get_branch)"
+        if is_worktree; then
+            title="$(get_branch)"
+        elif is_repo; then
+            title=$(get_repo)
         else
             title=$(get_curr_dir)
         fi

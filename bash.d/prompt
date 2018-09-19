@@ -44,3 +44,12 @@ function pre_prompt() {
     fi
     printf "${NORMAL}\n"
 }
+
+function get_prompt() {
+    local prompt="$"
+    if [[ $IN_LY_SHELL == "1" ]]; then
+        echo "(ly-build) $prompt"
+    else
+        echo "$prompt"
+    fi
+}

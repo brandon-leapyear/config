@@ -1,0 +1,11 @@
+#!/bin/bash
+
+faketty() {
+    script -q /dev/null "$@"
+}
+
+faketty hub pr list --format="%sC%>(7)%i%Creset %<(40)%t (%<(16)%au) [%L]%n" \
+    | grep --color=never \(brandon-leapyear\) \
+    | while read; do
+        sed 's/ \[\]//' <<< "$REPLY"
+    done

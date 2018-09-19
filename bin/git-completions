@@ -1,0 +1,23 @@
+#!/bin/bash
+
+function __git_chinn_refs() {
+    __git_refs | awk -F '/' '/chinn/ { print $NF; }'
+}
+
+function _git_c() {
+    __gitcomp_nl "$(__git_refs)"
+    __gitcomp_nl_append "$(__git_chinn_refs)"
+}
+
+function _git_wt() {
+    __gitcomp_nl "$(__git_chinn_refs)"
+}
+
+# completion function for anything that needs to tab complete
+# on git branches.
+# Usage: `complete -F __git_chinn_complete [command]`
+function __git_chinn_complete() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local opts=$(__git_chinn_refs)
+    COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+}

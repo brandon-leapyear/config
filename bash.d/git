@@ -2,6 +2,7 @@
 
 # git tab completion
 source /usr/local/bin/git-completion.bash
+source ~/.bin/git-completions
 
 # exit non-zero if not a git repo
 function is_repo() {
@@ -32,3 +33,62 @@ function get_branch() {
         echo $label
     fi
 }
+
+# Create a worktree for the given branch
+function make_worktree() {
+    local NAME=${1:?"no branch name given"}
+    local REPO=$(get_repo)
+
+    case $REPO in
+        (leapyear|ui) ;;
+        (*)
+            echo "Worktrees for '$REPO' not supported" >&2
+            return 1
+        ;;
+    esac
+
+    local BASE_DIR=~/repos/$REPO
+    local CHINN_BRANCH=$(git branch --list "chinn/${NAME}" | awk '{ print $1 }')
+    if [[ -z $CHINN_BRANCH ]]; then
+        echo "No branch named: $NAME" >&2
+        return 1
+    elif [[ $CHINN_BRANCH == "*" ]]; then
+        echo "Currently on $CHINN_BRANCH"
+        return 1
+    fi
+
+    local WORKTREE_DIR="$HOME/repos/chinn-$NAME+$REPO"
+    git worktree add "$WORKTREE_DIR" "$CHINN_BRANCH"
+    if [[ $? != 0 ]]; then
+        return 1
+    fi
+
+    cd "$WORKTREE_DIR"
+
+    case $REPO in
+        (leapyear)
+            echo 'Checking out submodules'
+            git submodule update --init --recursive
+            echo 'Installing build system'
+            build/install-stack.sh
+            build/user-prepare.sh
+            build/repo-prepare.sh
+            bin/stack.sh build leapyear-build
+        ;;
+    esac
+}
+complete -F __git_chinn_complete make_worktree
+
+# Delete the worktree for the given branch
+function rm_worktree() {
+    local NAME=${1:?"no branch name given"}
+    local REPO=$(get_repo)
+
+    local WORKTREE_DIR="$HOME/repos/chinn-$NAME+$REPO"
+    if [[ "$PWD" =~ "$WORKTREE_DIR" ]]; then
+        cd ~/repos/$REPO
+    fi
+    rm -rf "$WORKTREE_DIR"
+    git worktree prune
+}
+complete -F __git_chinn_complete rm_worktree
