@@ -13,6 +13,7 @@ BUILD_ARGS=(
   --test --no-run-tests
   --bench --no-run-benchmarks
   --no-dump-logs
+  --fast
 )
 
 exec stack build "${BUILD_ARGS[@]}" "$@"
