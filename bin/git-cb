@@ -1,3 +1,15 @@
 #!/bin/bash
 
+set -e
+
+MODIFIED_FILES=$(git ls-files -m --exclude-standard)
+if [[ -n "$MODIFIED_FILES" ]]; then
+    git stash push &> /dev/null
+fi
+
 git checkout -b "chinn/$1"
+git reset --hard master &> /dev/null
+
+if [[ -n "$MODIFIED_FILES" ]]; then
+    git stash pop &> /dev/null
+fi
