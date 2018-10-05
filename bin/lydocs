@@ -1,0 +1,19 @@
+#!/bin/bash
+
+source ~/.bashrc
+root
+
+SNAPSHOT_DIR=.stack-work/install/x86_64-osx
+SNAPSHOT="${SNAPSHOT_DIR}/$(ls -t "$SNAPSHOT_DIR" | head -n 1)"
+if [[ -z "$SNAPSHOT" ]]; then
+    echo "Snapshot is not built" >&2
+    exit 1
+fi
+
+DOCS="${SNAPSHOT}/8.2.2/doc/index.html"
+if [[ ! -f "$DOCS" ]]; then
+    echo "Documentation is not built" >&2
+    exit 1
+fi
+
+open "$DOCS"
