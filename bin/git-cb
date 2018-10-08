@@ -2,14 +2,11 @@
 
 set -e
 
-MODIFIED_FILES=$(git ls-files -m --exclude-standard)
-if [[ -n "$MODIFIED_FILES" ]]; then
-    git stash push &> /dev/null
+if [[ -n "$(git ls-files -m --exclude-standard)" ]]; then
+    echo "There are unmodified files" >&2
+    exit 1
 fi
 
 git checkout -b "chinn/$1"
 git reset --hard master &> /dev/null
-
-if [[ -n "$MODIFIED_FILES" ]]; then
-    git stash pop &> /dev/null
-fi
+echo "Reset to master"
