@@ -1,20 +1,2 @@
 #!/bin/bash
-
-source ~/.bashrc && root
-
-if [[ ! -f build/env.sh ]]; then
-    echo "Not in leapyear-build repo" >&2
-    exit 1
-fi
-
-source build/env.sh
-
-BUILD_ARGS=(
-  --test --no-run-tests
-  --bench --no-run-benchmarks
-  --no-dump-logs
-  --fast
-  --haddock
-)
-
-exec stack build "${BUILD_ARGS[@]}" "$@"
+exec lytest --no-run-tests "$@"
