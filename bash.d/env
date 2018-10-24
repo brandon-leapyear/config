@@ -28,3 +28,9 @@ export LSCOLORS=exgxcxdxcxegedabagacad
 if [[ -f ~/.aws/credentials ]]; then
     $(export_aws)
 fi
+
+# Circle CI
+export CIRCLE_REPO='LeapYear/leapyear'
+if [[ -f ~/.circleci/token ]]; then
+    export CIRCLE_TOKEN=$(cat ~/.circleci/token)
+fi
