@@ -91,11 +91,6 @@ foo
 -------------------------}
 -- <- comment.block.haskell
 
-x = if foo then bar else baz
---  ^ keyword.control.conditional.haskell
---         ^ keyword.control.conditional.haskell
---                  ^ keyword.control.conditional.haskell
-
 import Foo.Bar as Foo
 -- <- keyword.other.module.haskell
 --     ^ entity.name.namespace.haskell
@@ -117,6 +112,11 @@ import qualified Bar (Bar(..), Temp(Temp, record), asdf, asFoo)
 --                                         ^ entity.name.module.function.haskell
 --                                                  ^ entity.name.module.function.haskell
 --                                                         ^ entity.name.module.function.haskell
+
+x = if foo then bar else baz
+--  ^ keyword.control.conditional.haskell
+--         ^ keyword.control.conditional.haskell
+--                  ^ keyword.control.conditional.haskell
 
 foo :: Int -> Maybe a -> () -> Maybe (Either a b)
 -- <- entity.name.function.haskell
@@ -156,7 +156,7 @@ bar :: _ -> IO Int
 bar baz = do
   b <- asdf >>= foo baz
   let a = foo . bar
-      asdf = asdf
+      asdf = asdf `foo` asdf
   return 1
   where
     foo x = ()
@@ -213,6 +213,17 @@ a :: Bool
 data Foo a where
   Bar :: a -> Foo a
   Baz :: Bool -> Foo Int
+
+class Monad m => MonadFix m where
+  -- | fixme
+  fix :: m ()
+
+  -- | asdf
+  foo :: m Int
+  foo = return 0
+
+instance MonadFix IO where
+  fix = return ()
 
 makeParser :: Gen a
 makeParser = Foo{..}

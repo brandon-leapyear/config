@@ -41,13 +41,14 @@ contexts:
     - include: data-types
 
     # class/instance
-    # TODO
+    - include: type-class
+    - include: type-instance
+
+    # identifier (function signature/definition)
+    - include: identifier
 
     # expressions
     - include: expressions
-
-    # identifier (function signature/definition)
-    # TODO
 
   reset-at-top-level:
     - include: comments
@@ -134,6 +135,7 @@ contexts:
                   captures:
                     2: entity.name.class.haskell
                   push:
+                    - include: reset-at-top-level
                     - match: '(?=\1\S)'
                       pop: true
                     - match: '::'
@@ -149,6 +151,8 @@ contexts:
     - include: type-annotation
     # TODO: list comprehensions
     # TODO: quasi quotes
+    - match: '{{ident}}'
+      scope: variable.other.haskell
 
   function-definition:
     - include: keywords
@@ -173,36 +177,34 @@ contexts:
     - include: operators
     - include: strings
 
-  function-signature:
-    - match: '(::)'
-      captures:
-        1: keyword.other.double-colon.haskell
-      set: type
-
   identifier:
-    # top level identifier
-    - match: '({{ident}})'
+    - match: '^(\s*)({{ident}})'
       captures:
-        1: entity.name.function.haskell
+        2: entity.name.function.haskell
       push:
         - include: reset-at-top-level
-        # top level function signature
-        - include: function-signature
+        - match: '^(?=\1\S)'
+          pop: true
+        - match: '::'
+          scope: keyword.other.double-colon.haskell
+          set: type
+          with_prototype:
+            - include: reset-at-top-level
+            - match: '^(?=\1\S)'
+              pop: true
         - match: '{{ident}}'
           scope: variable.parameter.haskell
-        # top level function definition
         - match: '='
           scope: keyword.other.equals.haskell
           set: function-definition
-    # catch any other identifier
-    - match: '{{ident}}'
-      scope: variable.other.haskell
+          with_prototype:
+            - include: reset-at-top-level
+            - match: '^(?=\1\S)'
+              pop: true
 
   keywords:
     - match: '\b(else|if|then)\b'
       scope: keyword.control.conditional.haskell
-    - match: '\bimport\b'
-      scope: keyword.control.import.haskell
     - match: '\\case|\b(case|class|data|default|deriving|do|in|infix|infixl|infixr|instance|let|module|newtype|of|type|where)\b'
       scope: keyword.other.haskell
 
@@ -354,3 +356,25 @@ contexts:
         # inline type annotations like (a :: Int)
         - match: '\)'
           pop: true
+
+  type-class:
+    - match: '^class\b'
+      scope: keyword.operator.word.haskell
+      push:
+        - include: type
+        - match: '\bwhere\b'
+          scope: keyword.operator.word.haskell
+          set:
+            - include: reset-at-top-level
+            # TODO
+
+  type-instance:
+    - match: '^instance\b'
+      scope: keyword.operator.word.haskell
+      push:
+        - include: type
+        - match: '\bwhere\b'
+          scope: keyword.operator.word.haskell
+          set:
+            - include: reset-at-top-level
+            # TODO
