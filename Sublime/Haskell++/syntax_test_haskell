@@ -83,6 +83,36 @@ foo = 1
 , asdf foo wer
 ]
 
+[t| Either (Maybe [Int]) () |]
+-- <- keyword.operator.quasi.haskell
+--  ^ storage.type.haskell
+--          ^ storage.type.haskell
+--                ^ keyword.operator.list.haskell
+--                 ^ storage.type.haskell
+--                          ^ keyword.operator.quasi.haskell
+
+[d| data Foo = Foo |]
+-- <- keyword.operator.quasi.haskell
+--  ^ string.unquoted.haskell
+
+[p| Foo x y |]
+-- <- keyword.operator.quasi.haskell
+--  ^ variable.other.constructor.haskell
+--      ^ variable.other.haskell
+--          ^ keyword.operator.quasi.haskell
+
+[e| x + 1 |]
+-- <- keyword.operator.quasi.haskell
+--  ^ variable.other.haskell
+--    ^ keyword.operator.haskell
+--      ^ constant.numeric.integer.haskell
+
+[| x + 1 |]
+-- <- keyword.operator.quasi.haskell
+-- ^ variable.other.haskell
+--   ^ keyword.operator.haskell
+--     ^ constant.numeric.integer.haskell
+
 {- foo -}
 -- <- comment.block.haskell
 
@@ -311,6 +341,7 @@ makeParser = Foo{..}
 --             ^ string.unquoted.haskell
 --                 ^ keyword.operator.quasi.haskell
 
+-- TODO
 do
   let a :: Int
       a = 1

@@ -91,7 +91,7 @@ contexts:
         - include: expressions
 
   data-types:
-    - match: '^(data|newtype|type)\b'
+    - match: '\b(data|newtype|type)\b'
       scope: keyword.operator.word.haskell
       push:
         - match: '{{big_ident}}'
@@ -332,7 +332,20 @@ contexts:
               scope: keyword.other.preprocessor.haskell pragma.support.flag.haskell
 
   quasiquotes:
-    # TODO: template haskell quasi quotes
+    - match: '\[[ep]?\|'
+      scope: keyword.operator.quasi.haskell
+      push:
+        - match: '\|\]'
+          scope: keyword.operator.quasi.haskell
+          pop: true
+        - include: expressions
+    - match: '\[t\|'
+      scope: keyword.operator.quasi.haskell
+      push:
+        - match: '\|\]'
+          scope: keyword.operator.quasi.haskell
+          pop: true
+        - include: type
     - match: '(\[({{big_ident}}\.)*{{ident}}\|)'
       captures:
         1: keyword.operator.quasi.haskell
