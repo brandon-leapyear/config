@@ -1,4 +1,4 @@
--- SYNTAX TEST "Packages/Haskell++/Haskell++.sublime-syntax"
+-- SYNTAX TEST "Packages/Haskell++/Syntaxes/Haskell++.sublime-syntax"
 
 {-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
