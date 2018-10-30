@@ -45,13 +45,15 @@ contexts:
     - include: type-instance
 
     # functions
-    - include: functions
+    - match: '(?=^{{ident}})'
+      push: functions
+      with_prototype:
+        - include: reset-at-top-level
 
     # expressions
     - include: expressions
 
   reset-at-top-level:
-    - include: comments
     # anything declared with no indentation automatically resets syntax
     - match: '(?=^\S)'
       pop: true
@@ -336,6 +338,7 @@ contexts:
       captures:
         1: keyword.operator.quasi.haskell
       push:
+        - meta_include_prototype: false
         - meta_content_scope: string.unquoted.haskell
         - match: '\|\]'
           scope: keyword.operator.quasi.haskell
