@@ -22,6 +22,14 @@ foo :: Int
 foo = 1
 #endif
 
+$(deriveJSON ''TypeScript)
+-- <- keyword.operator.haskell
+ -- <- keyword.operator.haskell
+--^ variable.other.haskell
+--           ^ variable.other.constructor.haskell
+--             ^ variable.other.constructor.haskell
+--                       ^ keyword.operator.haskell
+
 -- foo in case of this do this
 -- <- comment.line.haskell
 -- ^ comment.line.haskell
@@ -213,7 +221,7 @@ bar (Baz baz) Baz{..} Baz{a = b} = do
 --                             ^ keyword.other.record-braces.haskell
 --                               ^ keyword.other.equals.haskell
 --                                  ^ keyword.other.haskell
-  b <- asdf >>= foo baz
+  b <- asdf >>= foo $(baz)
 
   foo [ bar x + y | x <- xs, y <- ys ]
 --    ^ keyword.operator.list.haskell

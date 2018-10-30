@@ -147,10 +147,11 @@ contexts:
                     - include: type
 
   expressions:
-    # TODO: template haskell
+    - include: template-haskell
     - include: strings
     - include: numbers
     - include: operators
+    # TODO: let clause
     - include: keywords
     - include: type-annotation
     - include: quasiquotes
@@ -203,7 +204,7 @@ contexts:
           scope: variable.other.constructor.haskell
         - match: '='
           scope: keyword.other.equals.haskell
-          set: expressions
+          set: expressions # TODO: where clause
           with_prototype:
             - include: reset-at-top-level
             - match: '^(?=\1\S)'
@@ -372,6 +373,17 @@ contexts:
           pop: true
     - match: '''.'''
       scope: string.quoted.single.haskell
+
+  template-haskell:
+    - match: '''+{{big_ident}}'
+      scope: variable.other.constructor.haskell
+    - match: '\$\('
+      scope: keyword.operator.haskell
+      push:
+        - match: '\)'
+          scope: keyword.operator.haskell
+          pop: true
+        - include: expressions
 
   type:
     - match: '{{big_ident}}'
