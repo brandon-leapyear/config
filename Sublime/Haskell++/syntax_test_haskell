@@ -206,9 +206,19 @@ foo
 --                                                   ^ constant.numeric.integer.haskell
 --                                                         ^ keyword.operator.list.haskell
 --                                                          ^ storage.type.haskell
-foo x = x
+foo x = let y = 2; z = 3 in x + y + z
 --  ^ variable.parameter.haskell
---      ^ variable.other.haskell
+--      ^ keyword.other.haskell
+--          ^ variable.other.haskell
+--            ^ keyword.operator.haskell
+--              ^ constant.numeric.integer.haskell
+--               ^ punctuation.terminator.haskell
+--                 ^ variable.other.haskell
+--                     ^ constant.numeric.integer.haskell
+--                       ^ keyword.other.haskell
+--                          ^ variable.other.haskell
+--                            ^ keyword.operator.haskell
+--                              ^ variable.other.haskell
 
 bar :: _ -> IO Int
 bar (Baz baz) Baz{..} Baz{a = b} = do
@@ -231,8 +241,18 @@ bar (Baz baz) Baz{..} Baz{a = b} = do
 --                    ^ keyword.operator.haskell
 
   let a = foo . bar
+--^ keyword.other.haskell
+--    ^ variable.other.haskell
+--      ^ keyword.operator.haskell
       asdf = asdf `foo` asdf
 --                ^ variable.function.infix.haskell
+      b :: Int; b = 2
+--    ^ variable.other.haskell
+--      ^ keyword.other.double-colon.haskell
+--         ^ storage.type.haskell
+--            ^ punctuation.terminator.haskell
+--              ^ variable.other.haskell
+--                  ^ constant.numeric.integer.haskell
   return 1
   where
     foo x = ()

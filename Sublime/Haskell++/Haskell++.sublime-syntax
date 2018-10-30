@@ -151,13 +151,12 @@ contexts:
     - include: strings
     - include: numbers
     - include: operators
-    # TODO: let clause
-    - include: keywords
     - include: type-annotation
     - include: quasiquotes
     - include: lists
     - include: infix
     - include: identifier
+    - include: keywords
     - match: '{'
       scope: keyword.operator.haskell
     - match: '}'
@@ -297,6 +296,8 @@ contexts:
   operators:
     - match: '{{operator}}'
       scope: keyword.operator.haskell
+    - match: ';'
+      scope: punctuation.terminator.haskell
 
   pragmas:
     - match: '\{-#\s+'
@@ -421,11 +422,12 @@ contexts:
     - match: '::'
       scope: keyword.other.double-colon.haskell
       push:
+        # inline type annotations like (a :: Int)
+        - match: '(?=\)|;)'
+          pop: true
+
         - include: reset-at-top-level
         - include: type
-        # inline type annotations like (a :: Int)
-        - match: '\)'
-          pop: true
 
   type-class:
     - match: '^class\b'

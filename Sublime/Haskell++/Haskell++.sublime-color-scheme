@@ -95,7 +95,7 @@
             "foreground": "var(cyan)",
         },
         {
-            "scope": "punctuation.pragma",
+            "scope": "punctuation",
             "foreground": "var(red)",
         },
         {
