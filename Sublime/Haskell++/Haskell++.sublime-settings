@@ -1,0 +1,12 @@
+{
+	"color_scheme": "Haskell++.sublime-color-scheme",
+	"extensions":
+	[
+		"*.hs"
+	],
+	"rulers":
+	[
+		100
+	],
+	"tab_size": 2
+}

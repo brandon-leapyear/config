@@ -1,0 +1,356 @@
+%YAML 1.2
+---
+# See http://www.sublimetext.com/docs/3/syntax.html
+name: Haskell++
+file_extensions:
+  - hs
+  - hsc
+  - cpphs
+scope: source.haskell++
+
+variables:
+  reserved_ident: '(case|class|data|default|deriving|do|else|if|import|in|infix|infixl|infixr|instance|let|module|newtype|of|then|type|where|_)'
+  ident: '\b(?!\b{{reserved_ident}}\b)[a-z_][\w'']*'
+  big_ident: '\b[A-Z][\w'']*'
+  operator: '[!#$%&*+./<=>?@^|\-~]*'
+
+contexts:
+
+  # Primary contexts
+
+  prototype:
+    - include: comments
+
+  main:
+    - meta_include_prototype: false
+
+    # CPP
+    - include: cpp-pragmas
+
+    # pragmas
+    - include: pragmas
+
+    # comments
+    - include: comments
+
+    # module operations; e.g. import/export
+    - include: module
+    - include: module-imports
+
+    # data (+ GADT) / newtype / type
+    - include: data-types
+
+    # class/instance
+    # TODO
+
+    # expressions
+    - include: expressions
+
+    # identifier (function signature/definition)
+    # TODO
+
+  reset-at-top-level:
+    - include: comments
+    # anything declared with no indentation automatically resets syntax
+    - match: '(?=^\S)'
+      pop: true
+
+  # Other contexts
+
+  comments:
+    - match: '--.*'
+      scope: comment.line.haskell
+    - match: '{-'
+      push:
+        - meta_scope: comment.block.haskell
+        - include: comments-nested
+
+  comments-nested:
+    - match: '-}'
+      pop: true
+    - match: '{-'
+      push: comments-nested
+
+  cpp-pragmas:
+    - match: '^#if(n?def)?'
+      scope: keyword.operator.word.haskell
+      push:
+        - match: '^#endif'
+          scope: keyword.operator.word.haskell
+          pop: true
+        - include: main
+    - match: '^(#define)\s+([\w_]+)(\s*\(.*?\))?'
+      captures:
+        1: keyword.operator.word.haskell
+        2: constant.other.pragma.haskell
+      push:
+        - include: reset-at-top-level
+        - include: expressions
+
+  data-types:
+    - match: '^(data|newtype|type)\b'
+      scope: keyword.operator.word.haskell
+      push:
+        - match: '{{big_ident}}'
+          scope: entity.name.type.haskell
+          set:
+            - match: '='
+              scope: keyword.other.equals.haskell
+              set:
+                - include: reset-at-top-level
+                - match: '{{big_ident}}'
+                  scope: entity.name.class.haskell
+                - match: '{'
+                  scope: keyword.other.record-braces.haskell
+                  push:
+                    - match: '}'
+                      scope: keyword.other.record-braces.haskell
+                      pop: true
+                    - match: '{{ident}}'
+                      scope: entity.name.record.haskell
+                      push:
+                        - match: '::'
+                          scope: keyword.other.double-colon.haskell
+                          set:
+                            - match: '(,|(?=}))'
+                              pop: true
+                            - include: type
+                - match: '\|'
+                  scope: keyword.other.sum-constructor.haskell
+                - match: '\bderiving\b'
+                  scope: keyword.operator.word.haskell
+                  push:
+                    - match: '\('
+                      set:
+                        - match: '\)'
+                          pop: true
+                        - match: '{{big_ident}}'
+                          scope: storage.type.haskell
+            - match: '\bwhere\b'
+              scope: keyword.operator.word.haskell
+              set:
+                - include: reset-at-top-level
+                - match: '^(\s+)({{big_ident}})'
+                  captures:
+                    2: entity.name.class.haskell
+                  push:
+                    - match: '(?=\1\S)'
+                      pop: true
+                    - match: '::'
+                      scope: keyword.other.double-colon.haskell
+                    - include: type
+
+  expressions:
+    # TODO: template haskell
+    - include: strings
+    - include: numbers
+    - include: operators
+    - include: keywords
+    - include: type-annotation
+    # TODO: list comprehensions
+    # TODO: quasi quotes
+
+  function-definition:
+    - include: keywords
+    - match: '(error|fail|undefined)'
+      scope: variable.function.error.haskell
+    - match: '`.*?`'
+      scope: variable.function.infix.haskell
+    - match: '(\[({{big_ident}}\.)*{{ident}}\|)'
+      captures:
+        1: keyword.operator.quasi.haskell
+      push:
+        - meta_content_scope: string.quoted.other.haskell
+        - match: '\|\]'
+          scope: keyword.operator.quasi.haskell
+          pop: true
+    - match: '{{ident}}'
+      scope: variable.other.haskell
+    - match: '({{big_ident}}\.)+'
+      scope: entity.name.namespace.haskell
+    - match: '{{big_ident}}\s'
+      scope: variable.other.constructor.haskell
+    - include: operators
+    - include: strings
+
+  function-signature:
+    - match: '(::)'
+      captures:
+        1: keyword.other.double-colon.haskell
+      set: type
+
+  identifier:
+    # top level identifier
+    - match: '({{ident}})'
+      captures:
+        1: entity.name.function.haskell
+      push:
+        - include: reset-at-top-level
+        # top level function signature
+        - include: function-signature
+        - match: '{{ident}}'
+          scope: variable.parameter.haskell
+        # top level function definition
+        - match: '='
+          scope: keyword.other.equals.haskell
+          set: function-definition
+    # catch any other identifier
+    - match: '{{ident}}'
+      scope: variable.other.haskell
+
+  keywords:
+    - match: '\b(else|if|then)\b'
+      scope: keyword.control.conditional.haskell
+    - match: '\bimport\b'
+      scope: keyword.control.import.haskell
+    - match: '\\case|\b(case|class|data|default|deriving|do|in|infix|infixl|infixr|instance|let|module|newtype|of|type|where)\b'
+      scope: keyword.other.haskell
+
+  module:
+    - match: '^module\b'
+      scope: keyword.other.module.haskell
+      push:
+        - include: module-identifier
+        - include: module-contents
+        - match: '\bwhere\b'
+          scope: keyword.other.module.haskell
+          pop: true
+
+  module-contents:
+    - match: '\('
+      push:
+        - match: '{{big_ident}}'
+          scope: entity.name.module.type.haskell
+        - match: '{{ident}}'
+          scope: entity.name.module.function.haskell
+        - match: '\('
+          scope: keyword.other.module-type.haskell
+          push:
+            - match: '{{big_ident}}'
+              scope: entity.name.module.class.haskell
+            - match: '{{ident}}'
+              scope: entity.name.module.function.haskell
+            - match: '{{operator}}'
+              scope: keyword.other.module-type.haskell
+            - match: '\)'
+              scope: keyword.other.module-type.haskell
+              pop: true
+        - match: '\)'
+          pop: true
+
+  module-identifier:
+    - match: '{{big_ident}}(\.{{big_ident}})*'
+      scope: entity.name.namespace.haskell
+
+  module-imports:
+    - match: '^import\b'
+      scope: keyword.other.module.haskell
+      push:
+        - include: reset-at-top-level
+        - include: module-identifier
+        - include: module-contents
+        - match: '\b(qualified|as|hiding)\b'
+          scope: keyword.other.module.haskell
+
+  numbers:
+    - match: '\d+(\.\d+)?(e|E)\d+'
+      scope: constant.numeric.scientific.haskell
+    - match: '\d+\.\d+'
+      scope: constant.numeric.float.haskell
+    - match: '0x[0-9a-fA-F]+'
+      scope: constant.numeric.hex.haskell
+    - match: '0o[0-7]+'
+      scope: constant.numeric.octal.haskell
+    - match: '\d+'
+      scope: constant.numeric.integer.haskell
+
+  operators:
+    - match: '{{operator}}'
+      scope: keyword.operator.haskell
+
+  pragmas:
+    - match: '\{-#\s+'
+      scope: punctuation.pragma.haskell
+      push:
+        - match: '#-\}'
+          scope: punctuation.pragma.haskell
+          pop: true
+        # GHC pragmas: https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#pragmas
+        - match: |-
+            (?x)
+            \b
+            (CONLIKE
+            |DEPRECATED
+            |IN(CLUDE|LINE|COHERENT|LINABLE)
+            |L(ANGUAGE|INE)
+            |MINIMAL
+            |NO(INLINE|UNPACK)
+            |O(PTIONS_GHC|VERLAP(PING|PABLE|S))
+            |RULES
+            |S(OURCE|PECIALI[SZ]E)
+            |UNPACK
+            |WARNING
+            )
+            \b
+          scope: keyword.preprocessor.haskell
+          set:
+            - match: '#-\}'
+              scope: punctuation.pragma.haskell
+              pop: true
+            - match: '\b([A-Z][a-z]*)+\b'
+              scope: keyword.other.preprocessor.haskell pragma.support.language.haskell
+            - match: '(-[\w-]+)'
+              scope: keyword.other.preprocessor.haskell pragma.support.flag.haskell
+
+  strings:
+    - match: '"'
+      push:
+        - meta_include_prototype: false
+        - meta_scope: string.quoted.haskell
+        # http://book.realworldhaskell.org/read/characters-strings-and-escaping-rules.html
+        - match: '\\(x|o)?\d+'
+          scope: constant.character.escape.haskell
+        - match: '\\(NUL|SOH|STX|ETX|EOT|ENQ|ACK|BEL|BS|HT|LF|VT|FF|CR|SO|SI|DLE|DC1|DC2|DC3|DC4|NAK|SYN|ETB|CAN|EM|SUB|ESC|FS|GS|RS|US|SP|DEL)'
+          scope: constant.character.escape.haskell
+        - match: '\\.'
+          scope: constant.character.escape.haskell
+        - match: '"'
+          pop: true
+
+  type:
+    - match: '{{big_ident}}'
+      scope: storage.type.haskell
+    - match: '{{ident}}'
+      scope: variable.type.haskell
+    - match: '\(\)'
+      scope: keyword.other.type.haskell
+    - match: '\b_\b'
+      scope: keyword.other.type.haskell
+    - match: '->'
+      scope: keyword.other.arrow.haskell
+    - match: '=>'
+      scope: keyword.other.double-arrow.haskell
+    - match: '\('
+      push:
+        - match: '\)'
+          pop: true
+        - include: type
+    - match: '''?\['
+      scope: keyword.other.type.haskell
+      push:
+        - match: '\]'
+          scope: keyword.other.type.haskell
+          pop: true
+        - include: type
+    - match: '''{{big_ident}}'
+      scope: entity.name.class.haskell
+
+  type-annotation:
+    - match: '::'
+      scope: keyword.other.double-colon.haskell
+      push:
+        - include: reset-at-top-level
+        - include: type
+        # inline type annotations like (a :: Int)
+        - match: '\)'
+          pop: true

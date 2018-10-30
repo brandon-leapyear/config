@@ -1,0 +1,127 @@
+{
+    "name": "Haskell++ Color Scheme",
+    "variables": {
+        "blue": "#5BC",
+        "cyan": "#5DD",
+        "green": "#9D2",
+        "green_muted": "#7A6",
+        "orange": "#C95",
+        "purple": "#B7F",
+        "red": "#E55",
+        "teal": "#4B9",
+        "white": "#EEE",
+        "yellow": "#DC1",
+        "yellow_muted": "#DC5",
+    },
+    "globals": {
+        "background": "#333",
+        "foreground": "var(white)",
+        "caret": "#FFF",
+        "selection": "color(#555 alpha(0.5))",
+        "line_highlight": "color(#555 alpha(0.5))",
+    },
+    "rules": [
+        {
+            "scope": "comment",
+            "foreground": "#999",
+            "font_style": "italic",
+        },
+        {
+            "scope": "constant",
+            "foreground": "var(purple)",
+        },
+        {
+            "scope": "entity.name",
+            "foreground": "var(green)",
+        },
+        {
+            "scope": "entity.name.class",
+            "foreground": "var(teal)",
+        },
+        {
+            "scope": "entity.name.label",
+            "foreground": "var(teal)",
+        },
+        {
+            "scope": "entity.name.module",
+            "foreground": "var(green_muted)",
+        },
+        {
+            "scope": "entity.name.module.class",
+            "foreground": "var(teal)",
+        },
+        {
+            "scope": "entity.name.module.type",
+            "foreground": "var(blue)",
+        },
+        {
+            "scope": "entity.name.namespace",
+            "foreground": "var(yellow)",
+        },
+        {
+            "scope": "entity.name.type",
+            "foreground": "var(blue)",
+        },
+        {
+            "scope": "keyword",
+            "foreground": "var(red)",
+        },
+        {
+            "scope": "keyword.operator.quasi",
+            "foreground": "var(green_muted)",
+        },
+        {
+            "scope": "keyword.other.module",
+            "foreground": "var(orange)",
+        },
+        {
+            "scope": "keyword.other.module-type",
+            "foreground": "var(blue)",
+        },
+        {
+            "scope": "keyword.other.type",
+            "foreground": "var(blue)",
+        },
+        {
+            "scope": "keyword.preprocessor",
+            "foreground": "var(red)",
+        },
+        {
+            "scope": "pragma.support.flag",
+            "foreground": "var(yellow_muted)",
+        },
+        {
+            "scope": "pragma.support.language",
+            "foreground": "var(cyan)",
+        },
+        {
+            "scope": "punctuation.pragma",
+            "foreground": "var(red)",
+        },
+        {
+            "scope": "storage.type",
+            "foreground": "var(blue)",
+        },
+        {
+            "scope": "string",
+            "foreground": "var(yellow_muted)",
+        },
+        {
+            "scope": "string.quoted.other",
+            "foreground": "var(orange)",
+        },
+        {
+            "scope": "variable.function.error",
+            "foreground": "var(yellow)",
+            "background": "color(#E24 alpha(0.3))",
+        },
+        {
+            "scope": "variable.function.infix",
+            "foreground": "var(orange)",
+        },
+        {
+            "scope": "variable.other.constructor",
+            "foreground": "var(teal)",
+        },
+    ],
+}

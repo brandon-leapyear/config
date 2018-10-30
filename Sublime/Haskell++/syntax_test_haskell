@@ -1,0 +1,226 @@
+-- SYNTAX TEST "Packages/Haskell++/Haskell++.sublime-syntax"
+
+{-# LANGUAGE OverloadedStrings #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
+
+module Foo
+  ( asdf
+  , Foo(..)
+  , Bar(bar)
+  , (>.>)
+  ) where
+
+#define DOUBLE_QUOTE 34
+-- <- keyword.operator.word.haskell
+--      ^ constant.other.pragma.haskell
+--                   ^ constant.numeric.integer.haskell
+#define POW(a,b) a ^ (b :: Int)
+#define int_func(c) (c :: Int -> Int)
+
+#if __GLASGOW_HASKELL__ < 710
+foo :: Int
+foo = 1
+#endif
+
+-- foo in case of this do this
+-- <- comment.line.haskell
+-- ^ comment.line.haskell
+
+"foo\n -- not a comment"
+-- <- string.quoted.haskell
+--  ^ constant.character.escape.haskell
+--     ^ string.quoted.haskell
+--        ^ string.quoted.haskell
+
+"\x08 \1234 \o123 \ESC \xs"
+-- <- string.quoted.haskell
+-- ^ constant.character.escape.haskell
+--      ^ constant.character.escape.haskell
+--             ^ constant.character.escape.haskell
+--                  ^ constant.character.escape.haskell
+--                      ^ constant.character.escape.haskell
+--                       ^ string.quoted.haskell
+
+1
+-- <- constant.numeric.integer.haskell
+-1
+-- <- keyword.operator.haskell
+ -- <- constant.numeric.integer.haskell
+2.0
+-- <- constant.numeric.float.haskell
+ -- <- constant.numeric.float.haskell
+--^ constant.numeric.float.haskell
+3e1
+-- <- constant.numeric.scientific.haskell
+ -- <- constant.numeric.scientific.haskell
+--^ constant.numeric.scientific.haskell
+4.2E10
+-- <- constant.numeric.scientific.haskell
+ -- <- constant.numeric.scientific.haskell
+--^ constant.numeric.scientific.haskell
+-- ^ constant.numeric.scientific.haskell
+--  ^ constant.numeric.scientific.haskell
+--   ^ constant.numeric.scientific.haskell
+0x9af
+-- <- constant.numeric.hex.haskell
+ -- <- constant.numeric.hex.haskell
+--^ constant.numeric.hex.haskell
+-- ^ constant.numeric.hex.haskell
+--  ^ constant.numeric.hex.haskell
+0o145
+-- <- constant.numeric.octal.haskell
+ -- <- constant.numeric.octal.haskell
+--^ constant.numeric.octal.haskell
+-- ^ constant.numeric.octal.haskell
+--  ^ constant.numeric.octal.haskell
+
+{- foo -}
+-- <- comment.block.haskell
+
+{-
+ssdf
+afso
+-- <- comment.block.haskell
+{- asdf -}
+}
+-}
+-- <- comment.block.haskell
+
+{-------------------------
+foo
+-------------------------}
+-- <- comment.block.haskell
+
+x = if foo then bar else baz
+--  ^ keyword.control.conditional.haskell
+--         ^ keyword.control.conditional.haskell
+--                  ^ keyword.control.conditional.haskell
+
+import Foo.Bar as Foo
+-- <- keyword.other.module.haskell
+--     ^ entity.name.namespace.haskell
+--        ^ entity.name.namespace.haskell
+--         ^ entity.name.namespace.haskell
+--             ^ keyword.other.module.haskell
+--                ^ entity.name.namespace.haskell
+
+import qualified Bar (Bar(..), Temp(Temp, record), asdf, asFoo)
+-- <- keyword.other.module.haskell
+--     ^ keyword.other.module.haskell
+--               ^ entity.name.namespace.haskell
+--                    ^ entity.name.module.type.haskell
+--                       ^ keyword.other.module-type.haskell
+--                        ^ keyword.other.module-type.haskell
+--                         ^ keyword.other.module-type.haskell
+--                          ^ keyword.other.module-type.haskell
+--                                   ^ entity.name.module.class.haskell
+--                                         ^ entity.name.module.function.haskell
+--                                                  ^ entity.name.module.function.haskell
+--                                                         ^ entity.name.module.function.haskell
+
+foo :: Int -> Maybe a -> () -> Maybe (Either a b)
+-- <- entity.name.function.haskell
+--  ^ keyword.other.double-colon.haskell
+--     ^ storage.type.haskell
+--         ^ keyword.other.arrow.haskell
+--            ^ storage.type.haskell
+--                  ^ variable.type.haskell
+--                       ^ keyword.other.type.haskell
+
+foo :: Monad m => m ()
+-- <- entity.name.function.haskell
+--     ^ storage.type.haskell
+--             ^ keyword.other.double-arrow.haskell
+--                ^ variable.type.haskell
+
+foo' :: (MonadIO m, MonadCatch m)
+  => Int -> m ()
+--^ keyword.other.double-arrow.haskell
+--   ^ storage.type.haskell
+foo' = undefined
+-- <- entity.name.function.haskell
+--   ^ keyword.other.equals.haskell
+--     ^ variable.function.error.haskell
+
+foo
+--^ entity.name.function.haskell
+  :: Monad m => DataKinded 'Open -> PromotedType '[1,2] -> [Int] -> m ()
+--^ keyword.other.double-colon.haskell
+--   ^ storage.type.haskell
+--         ^ variable.type.haskell
+foo x = x
+--  ^ variable.parameter.haskell
+--      ^ variable.other.haskell
+
+bar :: _ -> IO Int
+bar baz = do
+  b <- asdf >>= foo baz
+  let a = foo . bar
+      asdf = asdf
+  return 1
+  where
+    foo x = ()
+    bar :: Show s => s -> String
+    bar = show
+
+data Foo = Foo { a :: Int }
+-- <- keyword.operator.word.haskell
+--   ^ entity.name.type.haskell
+--       ^ keyword.other.equals.haskell
+--         ^ entity.name.class.haskell
+--             ^ keyword.other.record-braces.haskell
+--               ^ entity.name.record.haskell
+--                 ^ keyword.other.double-colon.haskell
+--                     ^ storage.type.haskell
+--                        ^ keyword.other.record-braces.haskell
+
+data Foo = Foo
+-- <- keyword.operator.word.haskell
+--   ^ entity.name.type.haskell
+--       ^ keyword.other.equals.haskell
+--         ^ entity.name.class.haskell
+  { a :: Int -> Double
+--^ keyword.other.record-braces.haskell
+--  ^ entity.name.record.haskell
+--    ^ keyword.other.double-colon.haskell
+--       ^ storage.type.haskell
+  , b :: Bool
+--  ^ entity.name.record.haskell
+--    ^ keyword.other.double-colon.haskell
+--       ^ storage.type.haskell
+  }
+--^ keyword.other.record-braces.haskell
+  deriving
+    ( Functor
+    , Monad
+    )
+
+type Bar = Int
+
+newtype Foo m a = Foo { unFoo :: ReaderT FooEnv m a }
+  deriving (MonadReader FooEnv)
+
+data Foo
+  = Foo
+  | Bar
+  | Baz
+  deriving (Ord,Enum,Show,Eq)
+
+data Foo = Foo {
+a :: Bool
+}
+
+data Foo a where
+  Bar :: a -> Foo a
+  Baz :: Bool -> Foo Int
+
+makeParser :: Gen a
+makeParser = Foo{..}
+  where
+    a = Bar { b = c }
+    b = [asdf| foo |]
+--      ^ keyword.operator.quasi.haskell
+--       ^ keyword.operator.quasi.haskell
+--           ^ keyword.operator.quasi.haskell
+--             ^ string.quoted.other.haskell
+--                 ^ keyword.operator.quasi.haskell
