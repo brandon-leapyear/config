@@ -12,7 +12,7 @@ variables:
   reserved_ident: '(case|class|data|default|deriving|do|else|if|import|in|infix|infixl|infixr|instance|let|module|newtype|of|then|type|where|_)'
   ident: '\b(?!\b{{reserved_ident}}\b)[a-z_][\w'']*'
   big_ident: '\b[A-Z][\w'']*'
-  operator: '[!#$%&*+./<=>?@^|\-~]*'
+  operator: '[!#$%&*+./<=>?@^|\-~:]*'
 
 contexts:
 
@@ -150,8 +150,8 @@ contexts:
     - include: template-haskell
     - include: strings
     - include: numbers
-    - include: operators
     - include: type-annotation
+    - include: operators
     - include: quasiquotes
     - include: lists
     - include: infix

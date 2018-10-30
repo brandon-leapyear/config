@@ -371,6 +371,7 @@ makeParser = Foo{..}
 
 -- TODO
 do
-  let a :: Int
+  let b = 2
+      a :: Int
       a = 1
   print $ Foo a
