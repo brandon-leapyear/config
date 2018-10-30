@@ -85,11 +85,8 @@ $(deriveJSON ''TypeScript)
 -- ^ constant.numeric.octal.haskell
 --  ^ constant.numeric.octal.haskell
 
-[1,2,3]
-
-[ 1 + 1
-, asdf foo wer
-]
+\_ -> [1,2,3]
+-- <- keyword.operator.haskell
 
 [t| Either (Maybe [Int]) () |]
 -- <- keyword.operator.quasi.haskell

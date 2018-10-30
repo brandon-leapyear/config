@@ -298,6 +298,8 @@ contexts:
       scope: keyword.operator.haskell
     - match: ';'
       scope: punctuation.terminator.haskell
+    - match: '\\'
+      scope: keyword.operator.haskell
 
   pragmas:
     - match: '\{-#\s+'
