@@ -220,7 +220,6 @@ contexts:
       scope: keyword.other.haskell
 
   lists:
-    # TODO: list comprehensions
     - match: '\['
       scope: keyword.operator.list.haskell
       push:

@@ -184,6 +184,14 @@ bar (Baz baz) Baz{..} Baz{a = b} = do
 --                               ^ keyword.other.equals.haskell
 --                                  ^ keyword.other.haskell
   b <- asdf >>= foo baz
+
+  foo [ bar x + y | x <- xs, y <- ys ]
+--    ^ keyword.operator.list.haskell
+--      ^ variable.other.haskell
+--                ^ keyword.operator.haskell
+--                  ^ variable.other.haskell
+--                    ^ keyword.operator.haskell
+
   let a = foo . bar
       asdf = asdf `foo` asdf
 --                ^ variable.function.infix.haskell
@@ -302,3 +310,8 @@ makeParser = Foo{..}
 --           ^ keyword.operator.quasi.haskell
 --             ^ string.unquoted.haskell
 --                 ^ keyword.operator.quasi.haskell
+
+do
+  let a :: Int
+      a = 1
+  print $ Foo a
