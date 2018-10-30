@@ -149,17 +149,9 @@ contexts:
     - include: operators
     - include: keywords
     - include: type-annotation
-    # TODO: list comprehensions
-    # TODO: quasi quotes
-    - match: '{{ident}}'
-      scope: variable.other.haskell
-
-  function-definition:
-    - include: keywords
-    - match: '(error|fail|undefined)'
-      scope: variable.function.error.haskell
     - match: '`.*?`'
       scope: variable.function.infix.haskell
+    # TODO: list comprehensions
     - match: '(\[({{big_ident}}\.)*{{ident}}\|)'
       captures:
         1: keyword.operator.quasi.haskell
@@ -168,14 +160,14 @@ contexts:
         - match: '\|\]'
           scope: keyword.operator.quasi.haskell
           pop: true
+    - match: '(error|fail|undefined)'
+      scope: variable.function.error.haskell
     - match: '{{ident}}'
       scope: variable.other.haskell
     - match: '({{big_ident}}\.)+'
       scope: entity.name.namespace.haskell
     - match: '{{big_ident}}\s'
       scope: variable.other.constructor.haskell
-    - include: operators
-    - include: strings
 
   identifier:
     - match: '^(\s*)({{ident}})'
@@ -196,7 +188,7 @@ contexts:
           scope: variable.parameter.haskell
         - match: '='
           scope: keyword.other.equals.haskell
-          set: function-definition
+          set: expressions
           with_prototype:
             - include: reset-at-top-level
             - match: '^(?=\1\S)'
