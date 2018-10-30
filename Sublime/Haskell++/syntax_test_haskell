@@ -74,6 +74,12 @@ foo = 1
 -- ^ constant.numeric.octal.haskell
 --  ^ constant.numeric.octal.haskell
 
+[1,2,3]
+
+[ 1 + 1
+, asdf foo wer
+]
+
 {- foo -}
 -- <- comment.block.haskell
 
@@ -153,7 +159,7 @@ foo x = x
 --      ^ variable.other.haskell
 
 bar :: _ -> IO Int
-bar baz = do
+bar (Baz baz) Baz{..} Baz{a = b} = do
   b <- asdf >>= foo baz
   let a = foo . bar
       asdf = asdf `foo` asdf
@@ -228,10 +234,10 @@ instance MonadFix IO where
 makeParser :: Gen a
 makeParser = Foo{..}
   where
-    a = Bar { b = c }
+    a = Bar { b = c, c = d }
     b = [asdf| foo |]
 --      ^ keyword.operator.quasi.haskell
 --       ^ keyword.operator.quasi.haskell
 --           ^ keyword.operator.quasi.haskell
---             ^ string.quoted.other.haskell
+--             ^ string.unquoted.haskell
 --                 ^ keyword.operator.quasi.haskell

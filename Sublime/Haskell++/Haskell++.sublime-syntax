@@ -44,8 +44,8 @@ contexts:
     - include: type-class
     - include: type-instance
 
-    # identifier (function signature/definition)
-    - include: identifier
+    # functions
+    - include: functions
 
     # expressions
     - include: expressions
@@ -149,27 +149,26 @@ contexts:
     - include: operators
     - include: keywords
     - include: type-annotation
-    - match: '`.*?`'
-      scope: variable.function.infix.haskell
-    # TODO: list comprehensions
-    - match: '(\[({{big_ident}}\.)*{{ident}}\|)'
-      captures:
-        1: keyword.operator.quasi.haskell
-      push:
-        - meta_content_scope: string.quoted.other.haskell
-        - match: '\|\]'
-          scope: keyword.operator.quasi.haskell
-          pop: true
+    - include: quasiquotes
+    - include: lists
+    - include: infix
+    - include: identifier
+    - match: '{'
+      scope: keyword.operator.haskell
+    - match: '}'
+      scope: keyword.operator.haskell
+
+  identifier:
     - match: '(error|fail|undefined)'
       scope: variable.function.error.haskell
     - match: '{{ident}}'
       scope: variable.other.haskell
     - match: '({{big_ident}}\.)+'
       scope: entity.name.namespace.haskell
-    - match: '{{big_ident}}\s'
+    - match: '{{big_ident}}'
       scope: variable.other.constructor.haskell
 
-  identifier:
+  functions:
     - match: '^(\s*)({{ident}})'
       captures:
         2: entity.name.function.haskell
@@ -186,6 +185,18 @@ contexts:
               pop: true
         - match: '{{ident}}'
           scope: variable.parameter.haskell
+        - match: '({{big_ident}})({)'
+          captures:
+            1: variable.other.constructor.haskell
+            2: keyword.other.record-braces.haskell
+          push:
+            - match: '}'
+              scope: keyword.other.record-braces.haskell
+              pop: true
+            - match: '(\.\.|=)'
+              scope: keyword.other.record-braces.haskell
+        - match: '{{big_ident}}'
+          scope: variable.other.constructor.haskell
         - match: '='
           scope: keyword.other.equals.haskell
           set: expressions
@@ -194,11 +205,32 @@ contexts:
             - match: '^(?=\1\S)'
               pop: true
 
+  infix:
+    - match: '`.*?`'
+      scope: variable.function.infix.haskell
+
   keywords:
     - match: '\b(else|if|then)\b'
       scope: keyword.control.conditional.haskell
     - match: '\\case|\b(case|class|data|default|deriving|do|in|infix|infixl|infixr|instance|let|module|newtype|of|type|where)\b'
       scope: keyword.other.haskell
+
+  lists:
+    # TODO: list comprehensions
+    - match: '\['
+      scope: keyword.operator.list.haskell
+      push:
+        - match: '\]'
+          scope: keyword.operator.list.haskell
+          pop: true
+        - match: '\('
+          push:
+            - match: '\)'
+              pop: true
+            - include: expressions
+        - match: ','
+          scope: keyword.operator.list.haskell
+        - include: expressions
 
   module:
     - match: '^module\b'
@@ -296,6 +328,17 @@ contexts:
             - match: '(-[\w-]+)'
               scope: keyword.other.preprocessor.haskell pragma.support.flag.haskell
 
+  quasiquotes:
+    # TODO: template haskell quasi quotes
+    - match: '(\[({{big_ident}}\.)*{{ident}}\|)'
+      captures:
+        1: keyword.operator.quasi.haskell
+      push:
+        - meta_content_scope: string.unquoted.haskell
+        - match: '\|\]'
+          scope: keyword.operator.quasi.haskell
+          pop: true
+
   strings:
     - match: '"'
       push:
@@ -329,13 +372,17 @@ contexts:
         - match: '\)'
           pop: true
         - include: type
-    - match: '''?\['
-      scope: keyword.other.type.haskell
+    - match: '\[|\]'
+      scope: keyword.operator.list.haskell
+    - match: '''\['
+      scope: keyword.operator.list.haskell
       push:
         - match: '\]'
-          scope: keyword.other.type.haskell
+          scope: keyword.operator.list.haskell
           pop: true
-        - include: type
+        - match: ','
+          scope: keyword.operator.list.haskell
+        - include: expressions
     - match: '''{{big_ident}}'
       scope: entity.name.class.haskell
 
