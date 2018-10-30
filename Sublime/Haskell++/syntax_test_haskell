@@ -32,6 +32,9 @@ foo = 1
 --     ^ string.quoted.haskell
 --        ^ string.quoted.haskell
 
+'a'
+-- <- string.quoted.single.haskell
+
 "\x08 \1234 \o123 \ESC \xs"
 -- <- string.quoted.haskell
 -- ^ constant.character.escape.haskell

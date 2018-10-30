@@ -358,6 +358,8 @@ contexts:
           scope: constant.character.escape.haskell
         - match: '"'
           pop: true
+    - match: '''.'''
+      scope: string.quoted.single.haskell
 
   type:
     - match: '{{big_ident}}'
