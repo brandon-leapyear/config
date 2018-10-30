@@ -95,6 +95,8 @@ contexts:
         - match: '{{big_ident}}'
           scope: entity.name.type.haskell
           set:
+            - match: '{{ident}}'
+              scope: variable.type.haskell
             - match: '='
               scope: keyword.other.equals.haskell
               set:

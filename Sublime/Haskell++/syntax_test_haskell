@@ -138,6 +138,7 @@ foo :: Monad m => m ()
 --     ^ storage.type.haskell
 --             ^ keyword.other.double-arrow.haskell
 --                ^ variable.type.haskell
+--                  ^ keyword.other.type.haskell
 
 foo' :: (MonadIO m, MonadCatch m)
   => Int -> m ()
@@ -154,15 +155,35 @@ foo
 --^ keyword.other.double-colon.haskell
 --   ^ storage.type.haskell
 --         ^ variable.type.haskell
+--              ^ storage.type.haskell
+--                         ^ entity.name.class.haskell
+--                                  ^ storage.type.haskell
+--                                               ^ keyword.operator.list.haskell
+--                                                ^ keyword.operator.list.haskell
+--                                                 ^ constant.numeric.integer.haskell
+--                                                  ^ keyword.operator.list.haskell
+--                                                   ^ constant.numeric.integer.haskell
+--                                                         ^ keyword.operator.list.haskell
+--                                                          ^ storage.type.haskell
 foo x = x
 --  ^ variable.parameter.haskell
 --      ^ variable.other.haskell
 
 bar :: _ -> IO Int
 bar (Baz baz) Baz{..} Baz{a = b} = do
+--   ^ variable.other.constructor.haskell
+--            ^ variable.other.constructor.haskell
+--               ^ keyword.other.record-braces.haskell
+--                ^ keyword.other.record-braces.haskell
+--                    ^ variable.other.constructor.haskell
+--                       ^ keyword.other.record-braces.haskell
+--                             ^ keyword.other.record-braces.haskell
+--                               ^ keyword.other.equals.haskell
+--                                  ^ keyword.other.haskell
   b <- asdf >>= foo baz
   let a = foo . bar
       asdf = asdf `foo` asdf
+--                ^ variable.function.infix.haskell
   return 1
   where
     foo x = ()
@@ -197,28 +218,65 @@ data Foo = Foo
   }
 --^ keyword.other.record-braces.haskell
   deriving
+--^ keyword.operator.word.haskell
     ( Functor
+--    ^ storage.type.haskell
     , Monad
+--    ^ storage.type.haskell
     )
 
 type Bar = Int
+-- <- keyword.operator.word.haskell
+--   ^ entity.name.type.haskell
+--         ^ entity.name.class.haskell
 
 newtype Foo m a = Foo { unFoo :: ReaderT FooEnv m a }
+-- <- keyword.operator.word.haskell
+--      ^ entity.name.type.haskell
+--          ^ variable.type.haskell
+--                ^ entity.name.class.haskell
+--                    ^ keyword.other.record-braces.haskell
+--                      ^ entity.name.record.haskell
+--                               ^ storage.type.haskell
+--                                              ^ variable.type.haskell
   deriving (MonadReader FooEnv)
 
 data Foo
+-- <- keyword.operator.word.haskell
+--   ^ entity.name.type.haskell
   = Foo
+--  ^ entity.name.class.haskell
   | Bar
+--  ^ entity.name.class.haskell
   | Baz
+--  ^ entity.name.class.haskell
   deriving (Ord,Enum,Show,Eq)
 
 data Foo = Foo {
+-- <- keyword.operator.word.haskell
+--   ^ entity.name.type.haskell
+--         ^ entity.name.class.haskell
 a :: Bool
+-- <- entity.name.record.haskell
 }
+-- <- keyword.other.record-braces.haskell
 
 data Foo a where
+-- <- keyword.operator.word.haskell
+--   ^ entity.name.type.haskell
+--       ^ variable.type.haskell
+--         ^ keyword.operator.word.haskell
   Bar :: a -> Foo a
+--^ entity.name.class.haskell
+--    ^ keyword.other.double-colon.haskell
+--       ^ variable.type.haskell
+--            ^ storage.type.haskell
   Baz :: Bool -> Foo Int
+--^ entity.name.class.haskell
+--    ^ keyword.other.double-colon.haskell
+--       ^ storage.type.haskell
+--               ^ storage.type.haskell
+--                   ^ storage.type.haskell
 
 class Monad m => MonadFix m where
   -- | fixme
