@@ -13,6 +13,8 @@ variables:
   ident: '\b(?!\b{{reserved_ident}}\b)[a-z_][\w'']*'
   big_ident: '\b[A-Z][\w'']*'
   operator: '[!#$%&*+./<=>?@^|\-~:]+'
+  qualified_ident: '(?:{{big_ident}}\.)*{{ident}}'
+  qualified_big_ident: '(?:{{big_ident}}\.)*{{big_ident}}'
 
 contexts:
 
@@ -268,7 +270,7 @@ contexts:
           pop: true
 
   module-identifier:
-    - match: '{{big_ident}}(\.{{big_ident}})*'
+    - match: '{{qualified_big_ident}}'
       scope: entity.name.namespace.haskell
 
   module-imports:
@@ -350,7 +352,7 @@ contexts:
           scope: keyword.operator.quasi.haskell
           pop: true
         - include: type
-    - match: '(\[({{big_ident}}\.)*{{ident}}\|)'
+    - match: '(\[{{qualified_ident}}\|)'
       captures:
         1: keyword.operator.quasi.haskell
       push:
@@ -378,7 +380,7 @@ contexts:
       scope: string.quoted.single.haskell
 
   template-haskell:
-    - match: '''+{{big_ident}}'
+    - match: '''+{{qualified_big_ident}}'
       scope: variable.other.constructor.haskell
     - match: '\$\('
       scope: keyword.operator.haskell
@@ -417,7 +419,7 @@ contexts:
         - match: ','
           scope: keyword.operator.list.haskell
         - include: expressions
-    - match: '''{{big_ident}}'
+    - match: '''+{{qualified_big_ident}}'
       scope: entity.name.class.haskell
 
   type-annotation:
