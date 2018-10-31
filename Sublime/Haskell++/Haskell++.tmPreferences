@@ -12,7 +12,8 @@
       <string>(?x)
         ( ^.*\bdo
         | ^.*=
-        | ^.*where\b
+        | ^.*\bwhere
+        | ^.*\bcase\b.*of
         ) \s* $
       </string>
       <key>bracketIndentNextLinePattern</key>
