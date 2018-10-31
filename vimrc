@@ -6,8 +6,8 @@ filetype plugin indent on
 
 " Tabs
 nnoremap tt :tabnext<CR>
-nnoremap tj :tabnext<CR>
-nnoremap tk :tabprev<CR>
+nnoremap tk :tabnext<CR>
+nnoremap tj :tabprev<CR>
 
 " Line numbers
 set number

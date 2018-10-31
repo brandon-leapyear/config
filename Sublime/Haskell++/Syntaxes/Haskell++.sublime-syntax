@@ -107,26 +107,33 @@ contexts:
                 - include: reset-at-top-level
                 - match: '{{big_ident}}'
                   scope: entity.name.class.haskell
-                - match: '{'
-                  scope: keyword.other.record-braces.haskell
                   push:
-                    - match: '}'
+                    - match: '{'
                       scope: keyword.other.record-braces.haskell
-                      pop: true
-                    - match: '{{ident}}'
-                      scope: entity.name.record.haskell
-                      push:
-                        - match: '::'
-                          scope: keyword.other.double-colon.haskell
-                          set:
-                            - match: '(,|(?=}))'
-                              pop: true
-                            - include: type
+                      set:
+                        - match: '}'
+                          scope: keyword.other.record-braces.haskell
+                          pop: true
+                        - match: '{{ident}}'
+                          scope: entity.name.record.haskell
+                          push:
+                            - match: '::'
+                              scope: keyword.other.double-colon.haskell
+                              set:
+                                - match: '(,|(?=}))'
+                                  pop: true
+                                - include: type
+                    - match: '(?=\S)'
+                      set: type
+                      with_prototype:
+                        - include: reset-at-top-level
+                        - match: '(?=\||\bderiving\b)'
+                          pop: true
                 - match: '\|'
                   scope: keyword.other.sum-constructor.haskell
                 - match: '\bderiving\b'
                   scope: keyword.operator.word.haskell
-                  push:
+                  set:
                     - match: '\('
                       set:
                         - match: '\)'

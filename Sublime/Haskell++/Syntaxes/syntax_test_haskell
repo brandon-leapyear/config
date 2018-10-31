@@ -307,14 +307,14 @@ newtype Foo m a = Foo { unFoo :: ReaderT FooEnv m a }
 --                                              ^ variable.type.haskell
   deriving (MonadReader FooEnv)
 
-data Foo
+data Foo a
 -- <- keyword.operator.word.haskell
 --   ^ entity.name.type.haskell
-  = Foo
+  = Foo [Int]
 --  ^ entity.name.class.haskell
-  | Bar
+  | Bar String
 --  ^ entity.name.class.haskell
-  | Baz
+  | Baz (Maybe a)
 --  ^ entity.name.class.haskell
   deriving (Ord,Enum,Show,Eq)
 
