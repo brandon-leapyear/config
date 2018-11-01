@@ -4,6 +4,11 @@ set softtabstop=4
 set shiftwidth=4
 filetype plugin indent on
 
+" Tabs
+nnoremap tt :tabnext<CR>
+nnoremap tj :tabnext<CR>
+nnoremap tk :tabprev<CR>
+
 " Line numbers
 set number
 
