@@ -31,3 +31,8 @@ fi
 if ! type hub &> /dev/null; then
     brew install hub
 fi
+
+# vim plugins
+if [[ ! -d vim/bundle/ctrlp.vim ]]; then
+    git clone https://github.com/ctrlpvim/ctrlp.vim.git vim/bundle/ctrlp.vim
+fi
