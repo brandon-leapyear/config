@@ -1,0 +1,8 @@
+#compdef git-c
+
+function _git_c {
+    emulate -L zsh
+
+    __gitcomp "$(__git_refs)"
+    __gitcomp "$(__git_refs | awk -F '/' '$1 == "chinn" { print $2 }')"
+}

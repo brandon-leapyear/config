@@ -1,0 +1,7 @@
+#compdef git-port
+
+function _git_port {
+    emulate -L zsh
+
+    __gitcomp "$(__git_refs | grep -o 'origin/[[:digit:]]*\.[[:digit:]]*$' | awk -F / '{ print $2 }')"
+}

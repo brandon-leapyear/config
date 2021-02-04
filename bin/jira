@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+# Open the URL for a JIRA issue. Can be used in two ways:
+#   - `jira` opens the TAG copied on the clipboard
+#   - `jira TAG` opens the given TAG
+#
+# TAG can be either a full designation (e.g. LY-100) or
+# just the number (defaults to "LY-#").
+
+set -eu
+
+USAGE='"Usage: $0 [TAG]
+
+Examples:
+jira LY-100
+jira 100     # prepends LY if none
+jira         # uses tag from clipboard
+"'
+
+if [[ $# == 0 ]]; then
+    TAG=$(pbpaste)
+else
+    TAG=$1
+fi
+
+# Check if tag is numeric; prepend "LY"
+if [[ "$TAG" =~ ^[0-9]+$ ]]; then
+    TAG=LY-${TAG}
+fi
+
+# strip whitespace: https://stackoverflow.com/a/12973694/8565175
+TAG=$(echo "$TAG" | xargs)
+CLEANED_TAG=$(echo "$TAG" | tr [a-z] [A-Z])
+
+if [[ ! "$CLEANED_TAG" =~ ^[A-Z]+-[0-9]+$ ]]; then
+    echo "Invalid tag: ${TAG}" >&2
+    eval echo "$USAGE" >&2
+    exit 1
+fi
+
+open "http://leapyear.atlassian.net/browse/${CLEANED_TAG}"

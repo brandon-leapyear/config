@@ -1,0 +1,29 @@
+#!/bin/bash
+#
+# Starts a branch that ports the given release branch.
+
+set -u -o pipefail
+
+fail() { echo "$*" >&2; exit 1; }
+
+if [[ $# != 1 ]]; then
+    fail "Usage: git port X.Y"
+elif [[ -n "$(git ls-files -m --exclude-standard -o)" ]]; then
+    fail "Modified or untracked files found"
+fi
+
+RELEASE="$1"
+
+git fetch origin -q
+
+PORT_BRANCH="port-${RELEASE}"
+RELEASE_BRANCH="origin/${RELEASE}"
+
+if git rev-parse "origin/${PORT_BRANCH}" &> /dev/null; then
+    fail "${PORT_BRANCH} already exists upstream"
+elif ! git rev-parse "${RELEASE_BRANCH}" &> /dev/null; then
+    fail "${RELEASE_BRANCH} doesn't exist upstream"
+fi
+
+git checkout -b "${PORT_BRANCH}"
+git reset --hard "${RELEASE_BRANCH}"

@@ -1,0 +1,25 @@
+#!/bin/bash
+#
+# Open the URL for a GitHub commit. Can be used in two ways:
+#   - `lycommit` opens the commit copied on the clipboard
+#   - `lycommit COMMIT` opens the given commit
+
+set -eu
+
+USAGE='"Usage: $0 [COMMIT]
+
+Examples:
+lycommit abcdef1234567890
+lycommit # uses commit from clipboard
+"'
+
+if [[ $# == 0 ]]; then
+    COMMIT=$(pbpaste)
+else
+    COMMIT=$1
+fi
+
+# strip whitespace: https://stackoverflow.com/a/12973694/8565175
+COMMIT=$(echo "$COMMIT" | xargs)
+
+open "https://github.com/LeapYear/leapyear/commit/${COMMIT}"

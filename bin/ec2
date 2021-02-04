@@ -1,0 +1,58 @@
+#!/usr/bin/python
+# SSH into an EC2 instance.
+
+import argparse, subprocess, json, sys
+
+parser = argparse.ArgumentParser(description='SSH into an EC2 instance')
+parser.add_argument('target')
+parser.add_argument(
+    '--user', '-u',
+    help='Use the given user to login (defaults to ec2-user)',
+    default='ec2-user',
+)
+parser.add_argument(
+    '--print', '-p',
+    help='Just print out the SSH address (default if not TTY)',
+    action='store_true',
+    dest='print_address',
+)
+parser.add_argument(
+    '--ip',
+    help='Just print out the IP address',
+    action='store_true',
+    dest='print_ip',
+)
+parser.add_argument(
+    '--region',
+    help='The region to look for instances (defaults to us-west-2)',
+    default='us-west-2',
+)
+args, rest = parser.parse_known_args()
+
+# use AWS CLI to find an instance with the name
+aws_command = [
+    'aws',
+    'ec2',
+    'describe-instances',
+    '--region',
+    args.region,
+    '--filters',
+    'Name=tag:Name,Values={}'.format(args.target),
+    'Name=instance-state-name,Values=running',
+    '--query',
+    'Reservations[0].Instances[0].PublicIpAddress',
+]
+ip = json.loads(subprocess.check_output(aws_command))
+if ip is None:
+    raise Exception('Invalid target: {}'.format(args.target))
+
+address = '{}@{}'.format(args.user, ip)
+
+if args.print_ip:
+    print(ip)
+elif args.print_address or not sys.stdout.isatty():
+    print(address)
+else:
+    ssh_command = ['ssh', '-o', 'StrictHostKeyChecking=no', address] + rest
+    print(' '.join(ssh_command))
+    subprocess.call(ssh_command)

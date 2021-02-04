@@ -124,6 +124,22 @@ function chext {
     mv $old "${old%\.*}${ext}"
 }
 
+############### LeapYear helpers ###############
+
+alias lybuild='lytest --no-run-tests' # defined in terms of lytest because no way to undo `--no-run-tests` with another flag
+alias lytest='bin/stack.sh build --test --bench --no-run-benchmarks --no-dump-logs --fast'
+alias lyexec='bin/stack.sh exec --'
+
+function export_nexus() {
+    local NEXUS_FILE=~/.nexus-url
+    if [[ -f "${NEXUS_FILE}" ]]; then
+        source "${NEXUS_FILE}"
+    else
+        echo "No file found: ${NEXUS_FILE}" >&2
+        return 1
+    fi
+}
+
 ############### AWS helpers ###############
 
 function ecr() {

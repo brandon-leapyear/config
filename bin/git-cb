@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e
+
+if [[ -n "$(git ls-files -m --exclude-standard)" ]]; then
+    echo "There are unmodified files" >&2
+    exit 1
+fi
+
+if [[ $# == 0 ]]; then
+    echo "Usage: git cb BRANCH [BASE]"
+    exit 1
+fi
+
+BRANCH=$1
+BASE=${2:-master}
+
+git checkout -b "chinn/${BRANCH}"
+git reset --hard "${BASE}" &> /dev/null
+echo "Reset to ${BASE}"

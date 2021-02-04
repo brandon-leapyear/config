@@ -1,0 +1,14 @@
+#!/bin/bash
+
+BRANCH="$1"
+shift
+
+# try to checkout under prefix
+CHINN_BRANCH="chinn/${BRANCH}"
+git rev-parse --quiet --verify "${CHINN_BRANCH}" > /dev/null
+if [[ $? == 0 ]]; then
+    git checkout "${CHINN_BRANCH}" "$@"
+else
+    git checkout "${BRANCH}" "$@"
+fi
+
