@@ -1,14 +1,29 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 
-BRANCH="$1"
-shift
+set -eu -o pipefail
 
-# try to checkout under prefix
-CHINN_BRANCH="chinn/${BRANCH}"
-git rev-parse --quiet --verify "${CHINN_BRANCH}" > /dev/null
-if [[ $? == 0 ]]; then
-    git checkout "${CHINN_BRANCH}" "$@"
-else
-    git checkout "${BRANCH}" "$@"
-fi
+usage="
+Usage: git c [ARGS...]
 
+Alias for 'git checkout', except also checks out the branch named
+'chinn/BRANCH', if one exists.
+"
+
+function abort { print "$@" >&2; exit 1 }
+function abort_help { abort -f '%s\n' "$@" $usage }
+
+function branch_exists {
+    git rev-parse $1 &> /dev/null
+}
+
+function git_c {
+    local args=("$@")
+
+    if [[ ${#args} -gt 0 ]] && branch_exists "chinn/${args[1]}"; then
+        git checkout "chinn/${args[1]}" ${args:1}
+    else
+        git checkout $args
+    fi
+}
+
+git_c "$@"

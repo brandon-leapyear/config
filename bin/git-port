@@ -1,29 +1,41 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 #
 # Starts a branch that ports the given release branch.
 
-set -u -o pipefail
+set -eu -o pipefail
 
-fail() { echo "$*" >&2; exit 1; }
+usage="
+Usage: git port X.Y
+"
 
-if [[ $# != 1 ]]; then
-    fail "Usage: git port X.Y"
-elif [[ -n "$(git ls-files -m --exclude-standard -o)" ]]; then
-    fail "Modified or untracked files found"
-fi
+function abort { print "$@" >&2; exit 1 }
+function abort_help { abort -f '%s\n' "$@" $usage }
 
-RELEASE="$1"
+function remote_branch_exists {
+    git rev-parse "origin/${1}" &> /dev/null
+}
 
-git fetch origin -q
+function git_port {
+    if [[ $# != 1 ]]; then
+        abort_help
+    elif [[ -n "$(git ls-files -m --exclude-standard -o)" ]]; then
+        abort "Modified or untracked files found"
+    fi
 
-PORT_BRANCH="port-${RELEASE}"
-RELEASE_BRANCH="origin/${RELEASE}"
+    local release_branch=$1
 
-if git rev-parse "origin/${PORT_BRANCH}" &> /dev/null; then
-    fail "${PORT_BRANCH} already exists upstream"
-elif ! git rev-parse "${RELEASE_BRANCH}" &> /dev/null; then
-    fail "${RELEASE_BRANCH} doesn't exist upstream"
-fi
+    git fetch origin -q
 
-git checkout -b "${PORT_BRANCH}"
-git reset --hard "${RELEASE_BRANCH}"
+    local port_branch="port-${release_branch}"
+
+    if remote_branch_exists $port_branch; then
+        abort "${port_branch} already exists upstream"
+    elif ! remote_branch_exists $release_branch; then
+        abort "${release_branch} doesn't exist upstream"
+    fi
+
+    git checkout -b $port_branch
+    git reset --hard "origin/${release_branch}"
+}
+
+git_port "$@"

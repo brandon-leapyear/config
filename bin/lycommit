@@ -1,25 +1,46 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 #
 # Open the URL for a GitHub commit. Can be used in two ways:
 #   - `lycommit` opens the commit copied on the clipboard
 #   - `lycommit COMMIT` opens the given commit
 
-set -eu
+set -eu -o pipefail
 
-USAGE='"Usage: $0 [COMMIT]
+usage="
+Usage: $0 [COMMIT]
 
 Examples:
 lycommit abcdef1234567890
 lycommit # uses commit from clipboard
-"'
+"
 
-if [[ $# == 0 ]]; then
-    COMMIT=$(pbpaste)
-else
-    COMMIT=$1
-fi
+function abort { print "$@" >&2; exit 1 }
+function abort_help { abort -f '%s\n' "$@" $usage }
 
-# strip whitespace: https://stackoverflow.com/a/12973694/8565175
-COMMIT=$(echo "$COMMIT" | xargs)
+function lycommit {
+    local args=()
+    for arg in "$@"; do
+        case $arg in
+            (-h|--help)
+                print $usage
+                exit 0
+            ;;
+            (*)
+                args+=$arg
+            ;;
+        esac
+    done
 
-open "https://github.com/LeapYear/leapyear/commit/${COMMIT}"
+    local commit=${args[1]:-$(pbpaste)}
+
+    # strip whitespace
+    commit=$(print $commit | sed 's/ *$//')
+
+    if [[ ! $commit =~ ^[0-9a-f]+$ ]]; then
+        abort_help "Invalid commit: ${commit}"
+    fi
+
+    open "https://github.com/LeapYear/leapyear/commit/${commit}"
+}
+
+lycommit "$@"

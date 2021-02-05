@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 #
 # Open the URL for a JIRA issue. Can be used in two ways:
 #   - `jira` opens the TAG copied on the clipboard
@@ -7,35 +7,50 @@
 # TAG can be either a full designation (e.g. LY-100) or
 # just the number (defaults to "LY-#").
 
-set -eu
+set -eu -o pipefail
 
-USAGE='"Usage: $0 [TAG]
+usage="
+Usage: $0 [TAG]
 
 Examples:
 jira LY-100
 jira 100     # prepends LY if none
 jira         # uses tag from clipboard
-"'
+"
 
-if [[ $# == 0 ]]; then
-    TAG=$(pbpaste)
-else
-    TAG=$1
-fi
+function abort { print "$@" >&2; exit 1 }
+function abort_help { abort -f '%s\n' "$@" $usage }
 
-# Check if tag is numeric; prepend "LY"
-if [[ "$TAG" =~ ^[0-9]+$ ]]; then
-    TAG=LY-${TAG}
-fi
+function jira {
+    local args=()
+    for arg in "$@"; do
+        case $arg in
+            (-h|--help)
+                print $usage
+                exit 0
+            ;;
+            (*)
+                args+=$arg
+            ;;
+        esac
+    done
 
-# strip whitespace: https://stackoverflow.com/a/12973694/8565175
-TAG=$(echo "$TAG" | xargs)
-CLEANED_TAG=$(echo "$TAG" | tr [a-z] [A-Z])
+    local tag=${args[1]:-$(pbpaste)}
 
-if [[ ! "$CLEANED_TAG" =~ ^[A-Z]+-[0-9]+$ ]]; then
-    echo "Invalid tag: ${TAG}" >&2
-    eval echo "$USAGE" >&2
-    exit 1
-fi
+    # Check if tag is numeric; prepend "LY"
+    if [[ $tag =~ ^[0-9]+$ ]]; then
+        tag="LY-${tag}"
+    fi
 
-open "http://leapyear.atlassian.net/browse/${CLEANED_TAG}"
+    # strip whitespace
+    tag=$(print $tag | sed 's/ *$//')
+
+    local cleaned_tag=$(echo $tag | tr '[a-z]' '[A-Z]')
+    if [[ ! $cleaned_tag =~ ^[A-Z]+-[0-9]+$ ]]; then
+        abort_help "Invalid tag: ${tag}"
+    fi
+
+    open "http://leapyear.atlassian.net/browse/${cleaned_tag}"
+}
+
+jira "$@"

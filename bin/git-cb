@@ -1,20 +1,35 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 
-set -e
+set -eu -o pipefail
 
-if [[ -n "$(git ls-files -m --exclude-standard)" ]]; then
-    echo "There are unmodified files" >&2
-    exit 1
-fi
+usage="
+Usage: git cb BRANCH [BASE]
 
-if [[ $# == 0 ]]; then
-    echo "Usage: git cb BRANCH [BASE]"
-    exit 1
-fi
+Create a new 'chinn/*' branch.
 
-BRANCH=$1
-BASE=${2:-master}
+Parameters:
+BRANCH              The name of the branch to create
+BASE                The base of the branch (defaults to master)
+"
 
-git checkout -b "chinn/${BRANCH}"
-git reset --hard "${BASE}" &> /dev/null
-echo "Reset to ${BASE}"
+function abort { print "$@" >&2; exit 1 }
+function abort_help { abort -f '%s\n' "$@" $usage }
+
+function git_cb {
+    if [[ -n "$(git ls-files -m --exclude-standard)" ]]; then
+        abort "There are modified files"
+    fi
+
+    local branch=${1:-}
+    local base=${2:-master}
+
+    if [[ -z $branch ]]; then
+        abort_help
+    fi
+
+    git checkout -b "chinn/${branch}"
+    print "Resetting to ${base}"
+    git reset --hard "${base}" &> /dev/null
+}
+
+git_cb "$@"
