@@ -1,0 +1,26 @@
+#!/usr/bin/env zsh
+
+set -eu -o pipefail
+
+function git_mb {
+    local args=()
+    local pos_arg=0
+
+    local arg
+    for arg in $@; do
+        case $arg in
+            (-*) args+=$arg ;;
+            (*)
+                if [[ $pos_arg == 0 ]]; then
+                    arg="chinn/${arg}"
+                fi
+                args+=$arg
+                pos_arg=$(( pos_arg + 1 ))
+            ;;
+        esac
+    done
+
+    exec git bb-make-branch $args
+}
+
+git_mb "$@"
