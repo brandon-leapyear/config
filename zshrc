@@ -140,6 +140,12 @@ function export_nexus() {
     fi
 }
 
+if [[ -f ~/.config/artifactory/credentials ]]; then
+    source ~/.config/artifactory/credentials
+else
+    echo "WARNING: Artifactory credentials not set up at ~/.config/artifactory/credentials" >&2
+fi
+
 ############### AWS helpers ###############
 
 function ecr() {
